@@ -30,3 +30,4 @@ jobs:
             docker rmi pr-preview-example:pr-${PR} 2>/dev/null || true
 
             echo "✅ Cleanup complete for PR $PR"
+
