@@ -1,0 +1,32 @@
+name: Cleanup PR Preview
+
+on:
+  pull_request:
+    branches: [main]
+    types: [closed]
+    paths:
+      - "app/**"
+      - ".github/workflows/pr-preview.yml"
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove pull request preview container
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -e
+            PR=${{ github.event.pull_request.number }}
+
+            echo "🛑 Stopping and removing container for PR $PR"
+            docker stop pr-preview-${PR} 2>/dev/null || true
+            docker rm pr-preview-${PR} 2>/dev/null || true
+
+            echo "🧹 Removing image pr-preview-example:pr-${PR}"
+            docker rmi pr-preview-example:pr-${PR} 2>/dev/null || true
+
+            echo "✅ Cleanup complete for PR $PR"
