@@ -10,7 +10,7 @@ RUN PNPM_VERSION=$(node -e "console.log(require('./package.json').packageManager
 FROM base AS deps
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    pnpm install --frozen-lockfile
+    pnpm install --frozen-lockfile --prod=false
 
 FROM base AS builder
 
